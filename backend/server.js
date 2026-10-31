@@ -30,14 +30,14 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://pure.localhost:5173', 
 
-  // --- LIVE SERVER KE LIYE ---
-  'https://worldfinance24.online',        
-  'https://www.worldfinance24.online',    
-  'https://pure.worldfinance24.online',   
+  // // --- LIVE SERVER KE LIYE ---
+  // 'https://worldfinance24.online',        
+  // 'https://www.worldfinance24.online',    
+  // 'https://pure.worldfinance24.online',   
 
-  'https://worldtogether24.online',
-  'https://www.worldtogether24.online',
-  'https://pure.worldtogether24.online' // Agar naye domain par bhi pure subdomain banana ho
+  // 'https://worldtogether24.online',
+  // 'https://www.worldtogether24.online',
+  // 'https://pure.worldtogether24.online' // Agar naye domain par bhi pure subdomain banana ho
 ];
 
 app.use(cors({
