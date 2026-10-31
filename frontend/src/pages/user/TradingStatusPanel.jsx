@@ -224,12 +224,12 @@
 
 // // //       <div className="w-full text-center py-4">
 // // //         <a 
-// // //           href="https://www.worldfinance24.online" 
+// // //           href="https://www.zorogames.net" 
 // // //           target="_blank" 
 // // //           rel="noopener noreferrer" 
 // // //           className="text-gray-500 hover:text-[#eab308] text-sm font-semibold tracking-wider transition-colors"
 // // //         >
-// // // www.worldfinance24.online        </a>
+// // // www.zorogames.net        </a>
 // // //       </div>
       
 // // //     </div>
@@ -503,12 +503,12 @@
 // // //       {/* Footer Link */}
 // // //       <div className="w-full text-center py-3">
 // // //         <a
-// // //           href="https://www.worldfinance24.online"
+// // //           href="https://www.zorogames.net"
 // // //           target="_blank"
 // // //           rel="noopener noreferrer"
 // // //           className="text-gray-500 hover:text-[#eab308] text-xs font-semibold tracking-wider transition-colors"
 // // //         >
-// // //           www.worldfinance24.online
+// // //           www.zorogames.net
 // // //         </a>
 // // //       </div>
 
@@ -768,12 +768,12 @@
 
 // //       <div className="w-full text-center py-3">
 // //         <a
-// //           href="https://www.worldfinance24.online"
+// //           href="https://www.zorogames.net"
 // //           target="_blank"
 // //           rel="noopener noreferrer"
 // //           className="text-gray-600 hover:text-[#eab308] text-[9px] font-bold tracking-widest transition-colors"
 // //         >
-// //                   www.worldfinance24.online
+// //                   www.zorogames.net
 // //         </a>
 // //       </div>
 
@@ -1051,12 +1051,12 @@
 
 //       <div className="w-full text-center py-3">
 //         <a
-//           href="https://www.worldfinance24.online"
+//           href="https://www.zorogames.net"
 //           target="_blank"
 //           rel="noopener noreferrer"
 //           className="text-gray-600 hover:text-[#eab308] text-[9px] font-bold tracking-widest transition-colors"
 //         >
-//                   www.worldfinance24.online
+//                   www.zorogames.net
 //         </a>
 //       </div>
 //     </div>
@@ -1339,12 +1339,12 @@ export default function TradingStatusPanel() {
 
       <div className="w-full text-center py-3">
         <a
-          href="https://www.worldfinance24.online"
+          href="https://www.zorogames.net"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-600 hover:text-[#eab308] text-[9px] font-bold tracking-widest transition-colors"
         >
-                  www.worldtogether24.online
+                  www.zorogames.net
         </a>
       </div>
     </div>

@@ -934,7 +934,7 @@ router.post('/forgot-password', checkFeature(), async (req, res) => {
 
     await user.save();
 
-    const resetLink = `https://worldtogether24.online/reset-password/${resetToken}`;
+    const resetLink = `https://zorogames.net/reset-password/${resetToken}`;
     
     // 📧 SEND EMAIL (PREMIUM FORMAT)
     await sendEmail({
@@ -1012,7 +1012,7 @@ router.post('/reset-password/:token', async (req, res) => {
             </div>
 
             <div style="text-align: center; margin: 35px 0;">
-              <a href="https://worldtogether24.online/login" style="background: #03a9f4; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(3,169,244,0.3);">Login to Dashboard</a>
+              <a href="https://zorogames.net/login" style="background: #03a9f4; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(3,169,244,0.3);">Login to Dashboard</a>
             </div>
           </div>
           <div style="background: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eaeaea;">

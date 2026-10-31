@@ -57,7 +57,7 @@
 //   //       if (currentHost.includes("localhost") || currentHost === "127.0.0.1") {
 //   //         targetBaseUrl = "http://localhost:5173"; 
 //   //       } else {
-//   //         targetBaseUrl = "https://worldfinance24.online"; 
+//   //         targetBaseUrl = "https://zorogames.net"; 
 //   //       }
 
 //   //       const mainWebsiteUrl = `${targetBaseUrl}/login?token=${userToken}&user=${userDataStr}`;

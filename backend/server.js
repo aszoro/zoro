@@ -31,13 +31,17 @@ const allowedOrigins = [
   'http://pure.localhost:5173', 
 
   // // --- LIVE SERVER KE LIYE ---
-  // 'https://worldfinance24.online',        
-  // 'https://www.worldfinance24.online',    
-  // 'https://pure.worldfinance24.online',   
+  // 'https://zorogames.net',        
+  // 'https://www.zorogames.net',    
+  // 'https://pure.zorogames.net',   
 
-  // 'https://worldtogether24.online',
-  // 'https://www.worldtogether24.online',
-  // 'https://pure.worldtogether24.online' // Agar naye domain par bhi pure subdomain banana ho
+  'https://zorogames.net',
+'https://www.zorogames.net',
+'https://pure.zorogames.net',
+
+  // 'https://zorogames.net',
+  // 'https://www.zorogames.net',
+  // 'https://pure.zorogames.net' // Agar naye domain par bhi pure subdomain banana ho
 ];
 
 app.use(cors({

@@ -409,7 +409,7 @@
           
 // // // //           <div>
 // // // //             <h3 className="text-white font-bold text-lg mb-4 border-b border-[#2d3748] pb-2 inline-block">Support Info</h3>
-// // // //             <p className="text-sm mb-2 font-medium">Email: <span className="text-[#e4c568]">support@worldfinance24.online</span></p>
+// // // //             <p className="text-sm mb-2 font-medium">Email: <span className="text-[#e4c568]">support@zorogames.net</span></p>
 // // // //             <p className="text-sm font-medium">Mon - Sat: 10:00 AM - 6:00 PM</p>
 // // // //             <p className="text-xs text-gray-500 mt-4">* Withdrawals processed daily between 10 AM to 12 PM.</p>
 // // // //           </div>
@@ -846,7 +846,7 @@
           
 // // //           <div>
 // // //             <h3 className="text-white font-bold text-lg mb-4 border-b border-[#2d3748] pb-2 inline-block">Support Info</h3>
-// // //             <p className="text-sm mb-2 font-medium">Email: <span className="text-[#e4c568]">support@worldfinance24.online</span></p>
+// // //             <p className="text-sm mb-2 font-medium">Email: <span className="text-[#e4c568]">support@zorogames.net</span></p>
 // // //             <p className="text-sm font-medium">Mon - Sat: 10:00 AM - 6:00 PM</p>
 // // //           </div>
 // // //         </div>
