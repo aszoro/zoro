@@ -1,0 +1,60 @@
+
+@import "tailwindcss";
+
+/* ZORO GAMES — Global dark theme */
+:root {
+  background-color: #08050f;
+  color: #f8fafc;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  max-width: 100%;
+  background-color: #08050f;
+  color: #f8fafc;
+  overflow-x: clip;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Hide scrollbar while preserving scrolling */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Optional glass card */
+.glass-card {
+  background: rgba(18, 10, 32, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(168, 85, 247, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Purple neon text */
+.text-theme-green,
+.text-lava {
+  background: linear-gradient(
+    135deg,
+    #c084fc 0%,
+    #a855f7 50%,
+    #22d3ee 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
