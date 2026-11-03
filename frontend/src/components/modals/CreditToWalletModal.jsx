@@ -1623,6 +1623,9 @@ import {
 const CreditToWalletModal = ({ onClose }) => {
   const { user, token } = useAuth();
 
+  const isSetupUser =
+  String(user?.role || "").toLowerCase() === "setup";
+
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -1856,6 +1859,10 @@ const CreditToWalletModal = ({ onClose }) => {
     }
   };
 
+  if (isSetupUser) {
+  return null;
+}
+
   return (
     <>
     <div className="fixed inset-0 z-[99999] flex items-center justify-center overflow-y-auto bg-[#05040b]/90 p-2 backdrop-blur-md sm:p-5">
@@ -1868,7 +1875,7 @@ const CreditToWalletModal = ({ onClose }) => {
         <div className="h-[3px] shrink-0 bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" />
 
         {/* ZORO GAMES Header */}
-        <header className="relative shrink-0 overflow-hidden border-b border-white/[0.07] px-5 pb-5 pt-5 sm:px-7">
+        <header className="relative pt-[60px] shrink-0 overflow-hidden border-b border-white/[0.07] px-5 pb-5 pt-5 sm:px-7">
           <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-violet-600/15 blur-[65px]" />
 
           <div className="relative flex items-center justify-between gap-3">

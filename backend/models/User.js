@@ -67,12 +67,12 @@ const userSchema = new mongoose.Schema({
   directIncome: { type: Number, default: 0 },
   totalDirectIncome: { type: Number, default: 0 }, 
   
-  levelIncome: { type: Number, default: 0 },
-  totalLevelIncome: { type: Number, default: 0 },
+  // levelIncome: { type: Number, default: 0 },
+  // totalLevelIncome: { type: Number, default: 0 },
 
-  // // 🔥 NAYA WALA: ROI on ROI Level Income ke liye
-  //   levelRoiIncome: { type: Number, default: 0 },
-  //   totalLevelRoiIncome: { type: Number, default: 0 },
+  // 🔥 NAYA WALA: ROI on ROI Level Income ke liye
+    levelRoiIncome: { type: Number, default: 0 },
+    totalLevelRoiIncome: { type: Number, default: 0 },
   
   roiIncome: { type: Number, default: 0 }, // 🔥 NAYA: Daily 25-day cycle ROI yahan aayega
   totalRoiIncome: { type: Number, default: 0 },
@@ -118,7 +118,43 @@ totalRoyaltyPoolIncome: { type: Number, default: 0 },
   // ==========================================
   // 🔹 ROLE & STATUS
   // ==========================================
-  role: { type: String, enum: ['user', 'admin', 'promo', ], default: 'user' },
+role: {
+  type: String,
+  enum: ['user', 'admin', 'setup', 'promo', 'master'],
+  default: 'user'
+},
+
+
+ masterRoleChanged: {
+  type: Boolean,
+  default: false,
+},
+masterRoleChangedBy: {
+  type: String,
+  default: null,
+},
+masterRoleChangedAt: {
+  type: Date,
+  default: null,
+},
+
+// Master can assign only one package to this Setup ID.
+masterPackageAssigned: {
+  type: Boolean,
+  default: false,
+},
+masterPackageAssignedBy: {
+  type: String,
+  default: null,
+},
+masterPackageAssignedAt: {
+  type: Date,
+  default: null,
+},
+masterAssignedPackageAmount: {
+  type: Number,
+  default: null,
+},
   isBlocked: { type: Boolean, default: false },
 
 }, { timestamps: true });

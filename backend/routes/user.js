@@ -278,8 +278,7 @@ router.get('/sponsor/:id', getSponsorName);
  
 // 🔍 Get User By ID (Dashboard data, real + fake count yahan se jayega)
 // ⚠️ ISE SABSE NEECHE HI RAKHNA HAI
-router.get('/:userId', authMiddleware, getUserById); // Ye to sabse pehle hona chahiye
-// 
+ // 
 // // ---------------------------
 // Helper: Check if target is in downline
 const isUserInDownline = async (rootUserId, targetUserId) => {
@@ -356,8 +355,7 @@ router.get('/system-settings', async (req, res) => {
 
 // 2. Dynamic route ko neeche rakhein
 // Express yahan tabhi aayega agar path 'system-settings' nahi hoga
-router.get('/:userId', getUserById); 
-
+ 
 
 
 
@@ -437,117 +435,456 @@ router.put('/update-profile-secure', authMiddleware, async (req, res) => {
         res.status(500).json({ success: false, message: "Profile update failed. Check backend console." });
     }
 }); 
-router.get('/direct-team/:userId', async (req, res) => {
-  try {
-    // 🔥 FIX 1: Isko String me convert karo taaki Map mismatch na ho
-    const currentUserId = String(req.params.userId);
+// router.get('/direct-team/:userId', async (req, res) => {
+//   try {
+//     // 🔥 FIX 1: Isko String me convert karo taaki Map mismatch na ho
+//     const currentUserId = String(req.params.userId);
 
-    // 1. Ek hi baar me saare users RAM mein load karenge
-    // 🔥 FIX 2: pointBV bhi select karo kyuki frontend table me chahiye
-    const allUsers = await User.find({}, 'userId sponsorId name mobile country topUpAmount createdAt role pointBV').lean();
+//     // 1. Ek hi baar me saare users RAM mein load karenge
+//     // 🔥 FIX 2: pointBV bhi select karo kyuki frontend table me chahiye
+//     const allUsers = await User.find({}, 'userId sponsorId name mobile country topUpAmount createdAt role pointBV').lean();
 
-    // 👑 NAYA FIX: CURRENT USER KA ROLE CHECK KARO
-    const currentUserData = allUsers.find(u => String(u.userId) === currentUserId);
-    const isSuperLeader = currentUserData && currentUserData.role === 'superleader';
+//     // 👑 NAYA FIX: CURRENT USER KA ROLE CHECK KARO
+//     const currentUserData = allUsers.find(u => String(u.userId) === currentUserId);
+//     const isSuperLeader = currentUserData && currentUserData.role === 'superleader';
 
-    // 2. RAM mein Network Tree (Map) banayenge
-    const directMap = new Map();
-    const userDetailsMap = new Map();
+//     // 2. RAM mein Network Tree (Map) banayenge
+//     const directMap = new Map();
+//     const userDetailsMap = new Map();
 
-    for (let u of allUsers) {
-        const uId = String(u.userId);
-        userDetailsMap.set(uId, u);
+//     for (let u of allUsers) {
+//         const uId = String(u.userId);
+//         userDetailsMap.set(uId, u);
         
-        if (u.sponsorId) {
-            const spId = String(u.sponsorId); // 🔥 FIX 3: Sponsor ID ko strictly String banao
-            if (!directMap.has(spId)) {
-                directMap.set(spId, []);
-            }
-            directMap.get(spId).push(u);
-        }
+//         if (u.sponsorId) {
+//             const spId = String(u.sponsorId); // 🔥 FIX 3: Sponsor ID ko strictly String banao
+//             if (!directMap.has(spId)) {
+//                 directMap.set(spId, []);
+//             }
+//             directMap.get(spId).push(u);
+//         }
+//     }
+
+//     // 🔥 3. MAIN USER KI TOTAL TEAM NIKALNA
+//     let mainUserTotalTeam = 0;
+//     let mainQueue = [...(directMap.get(currentUserId) || [])];
+
+//     while (mainQueue.length > 0) {
+//         const currentNode = mainQueue.shift();
+//         mainUserTotalTeam++; 
+
+//         // ABSOLUTE BREAKAWAY WALL (WITH SUPER LEADER BYPASS)
+//         if (currentNode.role === 'leader' && !isSuperLeader) {
+//             continue; 
+//         }
+
+//         const children = directMap.get(String(currentNode.userId)) || [];
+//         for (let child of children) {
+//             mainQueue.push(child);
+//         }
+//     }
+
+//     // 🔥 4. TABLE KE LIYE DIRECTS KA DATA BANANA
+//     const myDirects = directMap.get(currentUserId) || [];
+    
+//     const teamWithStats = myDirects.map((direct, index) => {
+//         const directIdStr = String(direct.userId);
+//         const membersDirects = directMap.get(directIdStr) || [];
+//         const directCount = membersDirects.length;
+
+//         let teamSize = 0;
+
+//         if (direct.role === 'leader' && !isSuperLeader) {
+//             teamSize = 0; 
+//         } else {
+//             let subQueue = [...membersDirects];
+//             while (subQueue.length > 0) {
+//                 const subNode = subQueue.shift();
+//                 teamSize++;
+
+//                 if (subNode.role === 'leader' && !isSuperLeader) {
+//                     continue; 
+//                 }
+//                 const subChildren = directMap.get(String(subNode.userId)) || [];
+//                 for (let child of subChildren) {
+//                     subQueue.push(child);
+//                 }
+//             }
+//         }
+
+//         return {
+//             srNo: index + 1,
+//             userId: direct.userId,
+//             sponsorId: direct.sponsorId, // 🔥 Frontend ke Reference ID column ke liye
+//             name: direct.name,
+//             mobile: direct.mobile,
+//             country: direct.country,
+//             role: direct.role, 
+//             topUpAmount: direct.topUpAmount,
+//             pointBV: direct.pointBV || 0, // 🔥 Frontend ke BV column ke liye
+//             createdAt: direct.createdAt,
+//             totalDirects: directCount,
+//             totalTeam: teamSize,
+//             globalTeamCount: teamSize, 
+//             directCount: directCount
+//         };
+//     });
+
+//     // Naye directs sabse upar dikhane ke liye sort (Descending order of date)
+//     teamWithStats.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+//     // Response Bhejenge
+//     res.json({
+//       team: teamWithStats,      
+//       totalTeam: mainUserTotalTeam 
+//     });
+
+//   } catch (err) {
+//     console.error("Error in direct-team API:", err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+
+// // POST /user/master-setup-role/:userId
+// router.post(
+//   "/master-setup-role/:userId",
+//   verifyUser, // Replace with your actual user-auth middleware
+//   async (req, res) => {
+//     try {
+//       const masterId = String(req.user?.userId || "");
+//       const targetId = String(req.params.userId || "");
+
+//       if (!masterId || !targetId) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Invalid user information"
+//         });
+//       }
+
+//       const master = await User.findOne({ userId: masterId });
+
+//       if (!master || master.role !== "master") {
+//         return res.status(403).json({
+//           success: false,
+//           message: "Only Master ID can assign Setup ID"
+//         });
+//       }
+
+//       // Sirf apne direct member ko change kar sakta hai
+//       const target = await User.findOne({
+//         userId: targetId,
+//         sponsorId: masterId
+//       });
+
+//       if (!target) {
+//         return res.status(404).json({
+//           success: false,
+//           message: "This user is not your direct member"
+//         });
+//       }
+
+//       // Master ka one-time permission
+//       if (target.masterRoleChanged === true) {
+//         return res.status(409).json({
+//           success: false,
+//           message: "Master has already used the role change for this user. Contact Admin."
+//         });
+//       }
+
+//       if (target.role !== "user") {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Only Normal User can be changed to Setup ID"
+//         });
+//       }
+
+//       target.role = "setup";
+//       target.masterRoleChanged = true;
+//       target.masterRoleChangedBy = masterId;
+//       target.masterRoleChangedAt = new Date();
+
+//       await target.save();
+
+//       return res.json({
+//         success: true,
+//         message: "User successfully changed to Setup ID",
+//         user: {
+//           userId: target.userId,
+//           role: target.role,
+//           masterRoleChanged: target.masterRoleChanged
+//         }
+//       });
+
+//     } catch (error) {
+//       console.error("Master Setup Role Error:", error);
+
+//       return res.status(500).json({
+//         success: false,
+//         message: "Failed to update user role"
+//       });
+//     }
+//   }
+// );
+ 
+
+
+
+
+
+/*
+  IMPORTANT:
+  Replace verifyUser with your actual user authentication middleware.
+  It must set req.user.userId from the verified token.
+*/
+
+ // ==========================================
+// GET DIRECT TEAM — SECURED
+// ==========================================
+router.get('/direct-team/:userId', authMiddleware, async (req, res) => {
+  try {
+    const currentUserId = String(req.params.userId || '').trim();
+    const authenticatedUserId = String(req.user?.userId || '').trim();
+
+    // Sirf logged-in user apni direct team dekh sakta hai
+    if (
+      !authenticatedUserId ||
+      authenticatedUserId.toLowerCase() !== currentUserId.toLowerCase()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to view this team'
+      });
     }
 
-    // 🔥 3. MAIN USER KI TOTAL TEAM NIKALNA
+    const allUsers = await User.find(
+      {},
+      'userId sponsorId name mobile country topUpAmount createdAt role pointBV masterRoleChanged masterRoleChangedBy masterRoleChangedAt'
+    ).lean();
+
+    const currentUserData = allUsers.find(
+      u => String(u.userId).toLowerCase() === currentUserId.toLowerCase()
+    );
+
+    if (!currentUserData) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const isSuperLeader = currentUserData.role === 'superleader';
+
+    // Direct members ka map
+    const directMap = new Map();
+
+    for (const u of allUsers) {
+      if (u.sponsorId) {
+        const sponsorId = String(u.sponsorId);
+
+        if (!directMap.has(sponsorId)) {
+          directMap.set(sponsorId, []);
+        }
+
+        directMap.get(sponsorId).push(u);
+      }
+    }
+
+    // Total team count
     let mainUserTotalTeam = 0;
     let mainQueue = [...(directMap.get(currentUserId) || [])];
 
     while (mainQueue.length > 0) {
-        const currentNode = mainQueue.shift();
-        mainUserTotalTeam++; 
+      const currentNode = mainQueue.shift();
+      mainUserTotalTeam++;
 
-        // ABSOLUTE BREAKAWAY WALL (WITH SUPER LEADER BYPASS)
-        if (currentNode.role === 'leader' && !isSuperLeader) {
-            continue; 
-        }
+      if (currentNode.role === 'leader' && !isSuperLeader) {
+        continue;
+      }
 
-        const children = directMap.get(String(currentNode.userId)) || [];
-        for (let child of children) {
-            mainQueue.push(child);
-        }
+      const children = directMap.get(String(currentNode.userId)) || [];
+
+      for (const child of children) {
+        mainQueue.push(child);
+      }
     }
 
-    // 🔥 4. TABLE KE LIYE DIRECTS KA DATA BANANA
+    // Direct members with team stats
     const myDirects = directMap.get(currentUserId) || [];
-    
+
     const teamWithStats = myDirects.map((direct, index) => {
-        const directIdStr = String(direct.userId);
-        const membersDirects = directMap.get(directIdStr) || [];
-        const directCount = membersDirects.length;
+      const directId = String(direct.userId);
+      const membersDirects = directMap.get(directId) || [];
+      const directCount = membersDirects.length;
 
-        let teamSize = 0;
+      let teamSize = 0;
 
-        if (direct.role === 'leader' && !isSuperLeader) {
-            teamSize = 0; 
-        } else {
-            let subQueue = [...membersDirects];
-            while (subQueue.length > 0) {
-                const subNode = subQueue.shift();
-                teamSize++;
+      if (direct.role === 'leader' && !isSuperLeader) {
+        teamSize = 0;
+      } else {
+        let subQueue = [...membersDirects];
 
-                if (subNode.role === 'leader' && !isSuperLeader) {
-                    continue; 
-                }
-                const subChildren = directMap.get(String(subNode.userId)) || [];
-                for (let child of subChildren) {
-                    subQueue.push(child);
-                }
-            }
+        while (subQueue.length > 0) {
+          const subNode = subQueue.shift();
+          teamSize++;
+
+          if (subNode.role === 'leader' && !isSuperLeader) {
+            continue;
+          }
+
+          const children = directMap.get(String(subNode.userId)) || [];
+
+          for (const child of children) {
+            subQueue.push(child);
+          }
         }
+      }
 
-        return {
-            srNo: index + 1,
-            userId: direct.userId,
-            sponsorId: direct.sponsorId, // 🔥 Frontend ke Reference ID column ke liye
-            name: direct.name,
-            mobile: direct.mobile,
-            country: direct.country,
-            role: direct.role, 
-            topUpAmount: direct.topUpAmount,
-            pointBV: direct.pointBV || 0, // 🔥 Frontend ke BV column ke liye
-            createdAt: direct.createdAt,
-            totalDirects: directCount,
-            totalTeam: teamSize,
-            globalTeamCount: teamSize, 
-            directCount: directCount
-        };
+      return {
+        srNo: index + 1,
+        userId: direct.userId,
+        sponsorId: direct.sponsorId,
+        name: direct.name,
+        mobile: direct.mobile,
+        country: direct.country,
+        role: direct.role,
+        topUpAmount: direct.topUpAmount,
+        pointBV: direct.pointBV || 0,
+        createdAt: direct.createdAt,
+        totalDirects: directCount,
+        totalTeam: teamSize,
+        globalTeamCount: teamSize,
+        directCount,
+
+        // Master one-time role change information
+        masterRoleChanged: direct.masterRoleChanged === true,
+        masterRoleChangedBy: direct.masterRoleChangedBy || null,
+        masterRoleChangedAt: direct.masterRoleChangedAt || null
+      };
     });
 
-    // Naye directs sabse upar dikhane ke liye sort (Descending order of date)
-    teamWithStats.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    teamWithStats.sort(
+      (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+    );
 
-    // Response Bhejenge
-    res.json({
-      team: teamWithStats,      
-      totalTeam: mainUserTotalTeam 
+    return res.json({
+      success: true,
+      team: teamWithStats,
+      totalTeam: mainUserTotalTeam
     });
 
   } catch (err) {
-    console.error("Error in direct-team API:", err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error in direct-team API:', err);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
   }
 });
- 
 
+
+// ==========================================
+// MASTER: CHANGE DIRECT USER TO SETUP ID
+// ONE TIME ONLY
+// ==========================================
+router.post(
+  '/master-setup-role/:userId',
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const masterId = String(req.user?.userId || '').trim();
+      const targetId = String(req.params.userId || '').trim();
+
+      if (!masterId || !targetId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user information'
+        });
+      }
+
+      // Verify Master role from database
+      const master = await User.findOne({
+        userId: masterId,
+        role: 'master'
+      }).select('userId role');
+
+      if (!master) {
+        return res.status(403).json({
+          success: false,
+          message: 'Only Master ID can assign Setup ID'
+        });
+      }
+
+      // Atomic update:
+      // 1. Target must be Master's direct member.
+      // 2. Current role must be user.
+      // 3. One-time lock must not already be used.
+      const updatedUser = await User.findOneAndUpdate(
+        {
+          userId: targetId,
+          sponsorId: masterId,
+          role: 'user',
+          masterRoleChanged: { $ne: true }
+        },
+        {
+          $set: {
+            role: 'setup',
+            masterRoleChanged: true,
+            masterRoleChangedBy: masterId,
+            masterRoleChangedAt: new Date()
+          }
+        },
+        {
+          new: true,
+          runValidators: true
+        }
+      ).select(
+        'userId name role masterRoleChanged masterRoleChangedBy masterRoleChangedAt'
+      );
+
+      if (!updatedUser) {
+        const target = await User.findOne({
+          userId: targetId,
+          sponsorId: masterId
+        }).select('userId role masterRoleChanged');
+
+        if (!target) {
+          return res.status(404).json({
+            success: false,
+            message: 'This user is not your direct member'
+          });
+        }
+
+        if (target.masterRoleChanged === true) {
+          return res.status(409).json({
+            success: false,
+            message: 'Master has already used the role change for this user. Contact Admin.'
+          });
+        }
+
+        return res.status(400).json({
+          success: false,
+          message: 'Only Normal User can be changed to Setup ID'
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'User successfully changed to Setup ID',
+        user: updatedUser
+      });
+
+    } catch (error) {
+      console.error('Master Setup Role Error:', error);
+
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to update user role'
+      });
+    }
+  }
+);
 
  
 
@@ -858,8 +1195,6 @@ router.get('/sponsor-name/:id', async (req, res) => {
  
  
 // ---------------------------
- 
-
  
 
 
@@ -1223,6 +1558,135 @@ const isSameUserId = (first, second) => {
 };
 
 
+// // ================= GET USER =================
+// router.get("/:userId", authMiddleware, async (req, res) => {
+//   try {
+//     const rawUserId = normalizeUserId(req.params.userId);
+//     const loggedInUserId = normalizeUserId(req.user?.userId);
+
+//     if (!rawUserId || rawUserId.toLowerCase() === "undefined") {
+//       return res.status(400).json({
+//         success: false,
+//         message: "User ID is required",
+//       });
+//     }
+
+//     const isAdmin = String(req.user?.role || "").toLowerCase() === "admin";
+
+//     // Non-admin can access only their own userId.
+//     // ObjectId lookup for other users requires an admin.
+//     const isOwnUser = isSameUserId(rawUserId, loggedInUserId);
+
+//     const isObjectId = /^[a-fA-F0-9]{24}$/.test(rawUserId);
+
+//     if (!isAdmin && !isOwnUser) {
+//       return res.status(403).json({
+//         success: false,
+//         message: "Unauthorized: You can only view your own profile.",
+//       });
+//     }
+
+//     if (isObjectId && !isAdmin) {
+//       return res.status(403).json({
+//         success: false,
+//         message: "Unauthorized: Admin access is required for ObjectId lookup.",
+//       });
+//     }
+
+//     const query = buildUserIdQuery(rawUserId);
+
+//     if (!query) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid User ID",
+//       });
+//     }
+
+//     let user = await User.findOne(query).select(
+//       "-password -transactionPassword -resetToken -__v"
+//     );
+
+//     let isFake = false;
+
+//     if (!user) {
+//       const FakeUser = require("../models/FakeUser");
+
+//       user = await FakeUser.findOne(query).select("-__v");
+
+//       // DummyUser is optional. Require it only if your project has this model.
+//       if (!user) {
+//         try {
+//           const DummyUser = require("../models/DummyUser");
+//           user = await DummyUser.findOne(query).select("-__v");
+//         } catch (error) {
+//           if (error.code !== "MODULE_NOT_FOUND") {
+//             throw error;
+//           }
+//         }
+//       }
+
+//       if (user) {
+//         isFake = true;
+//         user = user.toObject ? user.toObject() : user;
+
+//         if (
+//           user.isToppedUp &&
+//           (!user.packages || user.packages.length === 0)
+//         ) {
+//           user.packages = [{ amount: user.topUpAmount || 30 }];
+//         }
+//       }
+//     }
+
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+
+//     // Sync reward income only for real users.
+//     if (
+//       !isFake &&
+//       Number(user.totalRewardIncome || 0) === 0 &&
+//       Number(user.rewardIncome || 0) > 0
+//     ) {
+//       user.totalRewardIncome = user.rewardIncome;
+//       await user.save();
+//     }
+
+//     const directIncome = Number(
+//       user.totalDirectIncome ?? user.directIncome ?? 0
+//     );
+//     const levelIncome = Number(
+//       user.totalLevelIncome ?? user.levelIncome ?? 0
+//     );
+//     const rewardIncome = Number(
+//       user.totalRewardIncome ?? user.rewardIncome ?? 0
+//     );
+
+//     return res.json({
+//       success: true,
+//       user,
+//       income: {
+//         totalDirectIncome: directIncome,
+//         totalLevelIncome: levelIncome,
+//         totalRewardIncome: rewardIncome,
+//         totalIncome: directIncome + levelIncome + rewardIncome,
+//       },
+//     });
+//   } catch (err) {
+//     console.error("Error fetching user profile:", err);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// });
+
+
+
 // ================= GET USER =================
 router.get("/:userId", authMiddleware, async (req, res) => {
   try {
@@ -1236,12 +1700,10 @@ router.get("/:userId", authMiddleware, async (req, res) => {
       });
     }
 
-    const isAdmin = String(req.user?.role || "").toLowerCase() === "admin";
+    const isAdmin =
+      String(req.user?.role || "").toLowerCase() === "admin";
 
-    // Non-admin can access only their own userId.
-    // ObjectId lookup for other users requires an admin.
     const isOwnUser = isSameUserId(rawUserId, loggedInUserId);
-
     const isObjectId = /^[a-fA-F0-9]{24}$/.test(rawUserId);
 
     if (!isAdmin && !isOwnUser) {
@@ -1273,12 +1735,12 @@ router.get("/:userId", authMiddleware, async (req, res) => {
 
     let isFake = false;
 
+    // Fake user fallback
     if (!user) {
       const FakeUser = require("../models/FakeUser");
 
       user = await FakeUser.findOne(query).select("-__v");
 
-      // DummyUser is optional. Require it only if your project has this model.
       if (!user) {
         try {
           const DummyUser = require("../models/DummyUser");
@@ -1296,7 +1758,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
 
         if (
           user.isToppedUp &&
-          (!user.packages || user.packages.length === 0)
+          (!Array.isArray(user.packages) || user.packages.length === 0)
         ) {
           user.packages = [{ amount: user.topUpAmount || 30 }];
         }
@@ -1320,19 +1782,73 @@ router.get("/:userId", authMiddleware, async (req, res) => {
       await user.save();
     }
 
+    // ==========================================
+    // FETCH ACTUAL PACKAGE ACTIVATION RECORDS
+    // ==========================================
+    let packageActivations = [];
+
+    if (!isFake) {
+      const PackageActivation = require("../models/PackageActivation");
+
+      const packageUserId = String(user.userId || rawUserId).trim();
+
+      packageActivations = await PackageActivation.find({
+        userId: packageUserId,
+      })
+        .sort({ createdAt: -1 })
+        .lean();
+    }
+
+    // Calculate package total from actual activation records.
+    const combinedPackageAmount = packageActivations.reduce(
+      (total, pkg) => {
+        const amount = Number(
+          pkg.amount ??
+          pkg.packageAmount ??
+          pkg.topupAmount ??
+          pkg.price ??
+          0
+        );
+
+        return total + (Number.isFinite(amount) ? amount : 0);
+      },
+      0
+    );
+
+    const combinedPackageCount = packageActivations.length;
+
+    const activePackageCount = packageActivations.filter(
+  (pkg) => String(pkg.status || "").toLowerCase() === "active"
+).length;
+
+    // Prepare safe response user object.
+    const userData = user.toObject
+      ? user.toObject()
+      : { ...user };
+
+   
+    userData.packageActivations = packageActivations;
+userData.combinedPackageAmount = combinedPackageAmount;
+userData.combinedPackageCount = combinedPackageCount;
+userData.activePackageCount = activePackageCount;
+
+    // Existing income calculations.
     const directIncome = Number(
-      user.totalDirectIncome ?? user.directIncome ?? 0
+      userData.totalDirectIncome ?? userData.directIncome ?? 0
     );
+
     const levelIncome = Number(
-      user.totalLevelIncome ?? user.levelIncome ?? 0
+      userData.totalLevelIncome ?? userData.levelIncome ?? 0
     );
+
     const rewardIncome = Number(
-      user.totalRewardIncome ?? user.rewardIncome ?? 0
+      userData.totalRewardIncome ?? userData.rewardIncome ?? 0
     );
+ 
 
     return res.json({
       success: true,
-      user,
+      user: userData,
       income: {
         totalDirectIncome: directIncome,
         totalLevelIncome: levelIncome,

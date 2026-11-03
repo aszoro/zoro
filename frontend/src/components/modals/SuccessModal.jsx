@@ -1298,7 +1298,7 @@ const SuccessModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-[100000] flex items-center justify-center bg-[#03030b]/90 p-4 backdrop-blur-lg animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100000]  pt-[95px] flex items-center justify-center bg-[#03030b]/90 p-4 backdrop-blur-lg animate-in fade-in duration-200"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose?.();
       }}
@@ -1309,9 +1309,9 @@ const SuccessModal = ({
         aria-labelledby="success-modal-title"
         className="relative w-full max-w-sm overflow-hidden rounded-[28px] border border-violet-400/25 bg-[#0b0b17] shadow-[0_30px_100px_rgba(0,0,0,0.7)] animate-in zoom-in-95 duration-200"
       >
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400" />
+        <div className="absolute  inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 " />
 
-        <div className="pointer-events-none absolute -top-16 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-violet-500/20 blur-[60px]" />
+        <div className="pointer-events-none  absolute -top-16 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-violet-500/20 blur-[60px]" />
 
         <button
           type="button"
@@ -1322,11 +1322,11 @@ const SuccessModal = ({
           <X size={17} />
         </button>
 
-        <div className="relative overflow-hidden bg-gradient-to-b from-violet-500/[0.10] to-transparent px-6 pb-6 pt-9 text-center">
+        <div className="relative overflow-hidden  bg-gradient-to-b from-violet-500/[0.10] to-transparent px-6 pb-6 pt-4 text-center">
           <Sparkles size={15} className="absolute left-8 top-8 text-violet-300/70" />
           <Sparkles size={12} className="absolute right-10 top-14 text-cyan-300/70" />
 
-          <div className="relative mx-auto flex h-[86px] w-[86px] items-center justify-center">
+          <div className="relative  mx-auto flex h-[86px] w-[86px] items-center justify-center">
             <div className="absolute inset-0 rounded-full border border-violet-400/40" />
             <div className="absolute inset-2 rounded-full border border-fuchsia-400/40" />
 
@@ -1360,11 +1360,7 @@ const SuccessModal = ({
             </div>
           )}
 
-          {message && (
-            <p className="mb-4 whitespace-pre-line break-words text-center text-sm font-medium leading-6 text-slate-300">
-              {message}
-            </p>
-          )}
+         
 
           <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-[#11111e] divide-y divide-white/[0.06]">
             {content.idLabel && userId && (

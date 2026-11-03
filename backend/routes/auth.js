@@ -284,116 +284,116 @@ router.get('/check-sponsor/:id', async (req, res) => {
     }
 });
 
-router.post('/register', checkFeature('allowRegistrations'), async (req, res) => {
-  try {
-    // 🔥 FIX: Strict Type Casting (Prevents JSON Object Injection)
-    const name = String(req.body.name || '').trim();
-    const mobile = String(req.body.mobile || '').trim();
-    const email = String(req.body.email || '').trim().toLowerCase();
-    const country = String(req.body.country || '').trim();
-    const walletAddress = String(req.body.walletAddress || '').trim();
-    const password = String(req.body.password || '');
-    const upi = String(req.body.upi || '').trim();
-    const deviceId = String(req.body.deviceId || '').trim();
-    const sponsorId = String(req.body.sponsorId || '').trim();
+// router.post('/register', checkFeature('allowRegistrations'), async (req, res) => {
+//   try {
+//     // 🔥 FIX: Strict Type Casting (Prevents JSON Object Injection)
+//     const name = String(req.body.name || '').trim();
+//     const mobile = String(req.body.mobile || '').trim();
+//     const email = String(req.body.email || '').trim().toLowerCase();
+//     const country = String(req.body.country || '').trim();
+//     const walletAddress = String(req.body.walletAddress || '').trim();
+//     const password = String(req.body.password || '');
+//     const upi = String(req.body.upi || '').trim();
+//     const deviceId = String(req.body.deviceId || '').trim();
+//     const sponsorId = String(req.body.sponsorId || '').trim();
     
-    const userIP = getClientIP(req);
+//     const userIP = getClientIP(req);
 
-    // --- Validations ---
-    const nameRegex = /^[A-Za-z\s]{3,50}$/;
-    if (!name || !nameRegex.test(name)) return res.status(400).json({ message: 'Invalid Name. Only alphabets are allowed.' });
-    if (!country) return res.status(400).json({ message: 'Country is required.' });
+//     // --- Validations ---
+//     const nameRegex = /^[A-Za-z\s]{3,50}$/;
+//     if (!name || !nameRegex.test(name)) return res.status(400).json({ message: 'Invalid Name. Only alphabets are allowed.' });
+//     if (!country) return res.status(400).json({ message: 'Country is required.' });
 
-    if (!walletAddress) return res.status(400).json({ message: 'USDT BEP-20 Wallet Address is compulsory.' });
-    const walletRegex = /^0x[a-fA-F0-9]{40}$/;
-    if (!walletRegex.test(walletAddress)) return res.status(400).json({ message: 'Invalid USDT BEP-20 Address.' });
+//     if (!walletAddress) return res.status(400).json({ message: 'USDT BEP-20 Wallet Address is compulsory.' });
+//     const walletRegex = /^0x[a-fA-F0-9]{40}$/;
+//     if (!walletRegex.test(walletAddress)) return res.status(400).json({ message: 'Invalid USDT BEP-20 Address.' });
 
-    const mobileRegex = /^[0-9]{10,15}$/;
-    if (!mobile || !mobileRegex.test(mobile)) return res.status(400).json({ message: 'Invalid Mobile Number.' });
+//     const mobileRegex = /^[0-9]{10,15}$/;
+//     if (!mobile || !mobileRegex.test(mobile)) return res.status(400).json({ message: 'Invalid Mobile Number.' });
 
-    if (!email || !email.endsWith('@gmail.com')) return res.status(400).json({ message: 'Registration failed: Only Gmail is allowed.' });
-    if (!password || password.length < 6) return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+//     if (!email || !email.endsWith('@gmail.com')) return res.status(400).json({ message: 'Registration failed: Only Gmail is allowed.' });
+//     if (!password || password.length < 6) return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
 
      
-    // --- Anti-Bot Security ---
-    const isLocalIP = userIP === '127.0.0.1' || userIP === '::1';
-    if (!isLocalIP) {
-        const rule = await IpRule.findOne({ ipAddress: userIP });
-        if (rule && rule.isBlocked) return res.status(403).json({ message: "Access Denied." });
-    }
+//     // --- Anti-Bot Security ---
+//     const isLocalIP = userIP === '127.0.0.1' || userIP === '::1';
+//     if (!isLocalIP) {
+//         const rule = await IpRule.findOne({ ipAddress: userIP });
+//         if (rule && rule.isBlocked) return res.status(403).json({ message: "Access Denied." });
+//     }
 
-    if (deviceId) {
-        const isDeviceBlocked = await BlockedDevice.findOne({ deviceId });
-        if (isDeviceBlocked) return res.status(403).json({ message: "Device blocked." });
-    }
+//     if (deviceId) {
+//         const isDeviceBlocked = await BlockedDevice.findOne({ deviceId });
+//         if (isDeviceBlocked) return res.status(403).json({ message: "Device blocked." });
+//     }
 
-    // --- Sponsor Check ---
-    const userCount = await User.countDocuments();
-    let actualSponsorId = null;
+//     // --- Sponsor Check ---
+//     const userCount = await User.countDocuments();
+//     let actualSponsorId = null;
 
-    if (userCount === 0) {
-        actualSponsorId = sponsorId || 'ROOT'; 
-    } else {
-        if (!sponsorId) return res.status(400).json({ message: 'Sponsor ID is compulsory.' });
-        actualSponsorId = sponsorId; 
-        const sponsorExists = await User.findOne({ userId: actualSponsorId });
-        if (!sponsorExists) return res.status(400).json({ message: 'Invalid Sponsor ID.' });
-    }
+//     if (userCount === 0) {
+//         actualSponsorId = sponsorId || 'ROOT'; 
+//     } else {
+//         if (!sponsorId) return res.status(400).json({ message: 'Sponsor ID is compulsory.' });
+//         actualSponsorId = sponsorId; 
+//         const sponsorExists = await User.findOne({ userId: actualSponsorId });
+//         if (!sponsorExists) return res.status(400).json({ message: 'Invalid Sponsor ID.' });
+//     }
 
-    // --- Create User ---
-    const newUserId = await generateUserId(); 
-    const txPassword = generateTransactionPassword();
+//     // --- Create User ---
+//     const newUserId = await generateUserId(); 
+//     const txPassword = generateTransactionPassword();
 
-    const user = new User({
-      userId: newUserId, 
-      name, 
-      mobile, 
-      email, 
-      country, 
-      walletAddress, 
-      upi,
-      password: password, // Note: Mongoose pre-save hook must hash this!
-      transactionPassword: txPassword, 
-      sponsorId: actualSponsorId, 
-      role: 'user',
-      ipAddress: userIP,
-      deviceId: deviceId || null 
-    });
+//     const user = new User({
+//       userId: newUserId, 
+//       name, 
+//       mobile, 
+//       email, 
+//       country, 
+//       walletAddress, 
+//       upi,
+//       password: password, // Note: Mongoose pre-save hook must hash this!
+//       transactionPassword: txPassword, 
+//       sponsorId: actualSponsorId, 
+//       role: 'user',
+//       ipAddress: userIP,
+//       deviceId: deviceId || null 
+//     });
 
-    await user.save();
+//     await user.save();
 
-    // Background Email
-    sendEmail({
-        email: user.email,
-        subject: '🎉 Welcome to World together 24!',
-        html: `
-        <div style="font-family: Arial; padding: 20px;">
-            <h2 style="color: #03a9f4;">🚀 Welcome to zoro games</h2>
-            <p>Hello <strong>${user.name}</strong>,</p>
-            <p>Your account has been successfully created.</p>
-            <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #03a9f4;">
-                <p>👤 <strong>User ID:</strong> ${user.userId}</p>
-                <p>🔑 <strong>Login Password:</strong> ${user.password}</p>
-                <p>🛡️ <strong>Transaction Password:</strong> <span style="color:red;">${user.transactionPassword}</span> (Keep this safe!)</p>
-            </div>
-            <br/>
-            <a href="${process.env.FRONTEND_URL}/login" style="background-color: #03a9f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Now</a>
-        </div>
-        ` 
-    }).catch(emailErr => console.error("⚠️ Email failed:", emailErr.message));
+//     // Background Email
+//     sendEmail({
+//         email: user.email,
+//         subject: '🎉 Welcome to World together 24!',
+//         html: `
+//         <div style="font-family: Arial; padding: 20px;">
+//             <h2 style="color: #03a9f4;">🚀 Welcome to zoro games</h2>
+//             <p>Hello <strong>${user.name}</strong>,</p>
+//             <p>Your account has been successfully created.</p>
+//             <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #03a9f4;">
+//                 <p>👤 <strong>User ID:</strong> ${user.userId}</p>
+//                 <p>🔑 <strong>Login Password:</strong> ${user.password}</p>
+//                 <p>🛡️ <strong>Transaction Password:</strong> <span style="color:red;">${user.transactionPassword}</span> (Keep this safe!)</p>
+//             </div>
+//             <br/>
+//             <a href="${process.env.FRONTEND_URL}/login" style="background-color: #03a9f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Now</a>
+//         </div>
+//         ` 
+//     }).catch(emailErr => console.error("⚠️ Email failed:", emailErr.message));
 
-    return res.status(201).json({ 
-        message: 'User registered successfully.', 
-        userId: user.userId, 
-        name: user.name,
-        transactionPassword: txPassword 
-    });
+//     return res.status(201).json({ 
+//         message: 'User registered successfully.', 
+//         userId: user.userId, 
+//         name: user.name,
+//         transactionPassword: txPassword 
+//     });
 
-  } catch (err) {
-    console.error('Register error:', err);
-    res.status(500).json({ message: 'Server error.' });
-  }
-});
+//   } catch (err) {
+//     console.error('Register error:', err);
+//     res.status(500).json({ message: 'Server error.' });
+//   }
+// });
 
  
 
@@ -719,6 +719,259 @@ router.post('/register', checkFeature('allowRegistrations'), async (req, res) =>
 // Existing User, IpRule, LoginHistory, BlockedDevice,
 // Setting, jwt, JWT_SECRET, getClientIP aur sanitizeUser
 // definitions ko dobara declare mat karein.
+
+
+
+
+
+router.post('/register', checkFeature('allowRegistrations'), async (req, res) => {
+  try {
+    // Strict Type Casting
+    const name = String(req.body.name || '').trim();
+    const mobile = String(req.body.mobile || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const country = String(req.body.country || '').trim();
+    const walletAddress = String(req.body.walletAddress || '').trim();
+    const password = String(req.body.password || '');
+    const upi = String(req.body.upi || '').trim();
+    const deviceId = String(req.body.deviceId || '').trim();
+    const sponsorId = String(req.body.sponsorId || '').trim();
+
+    const userIP = getClientIP(req);
+
+    // ------------------------------------------------
+    // VALIDATIONS
+    // ------------------------------------------------
+
+    const nameRegex = /^[A-Za-z\s]{3,50}$/;
+
+    if (!name || !nameRegex.test(name)) {
+      return res.status(400).json({
+        message: 'Invalid Name. Only alphabets are allowed.'
+      });
+    }
+
+    if (!country) {
+      return res.status(400).json({
+        message: 'Country is required.'
+      });
+    }
+
+    if (!walletAddress) {
+      return res.status(400).json({
+        message: 'USDT BEP-20 Wallet Address is compulsory.'
+      });
+    }
+
+    const walletRegex = /^0x[a-fA-F0-9]{40}$/;
+
+    if (!walletRegex.test(walletAddress)) {
+      return res.status(400).json({
+        message: 'Invalid USDT BEP-20 Address.'
+      });
+    }
+
+    const mobileRegex = /^[0-9]{10,15}$/;
+
+    if (!mobile || !mobileRegex.test(mobile)) {
+      return res.status(400).json({
+        message: 'Invalid Mobile Number.'
+      });
+    }
+
+    if (!email || !email.endsWith('@gmail.com')) {
+      return res.status(400).json({
+        message: 'Registration failed: Only Gmail is allowed.'
+      });
+    }
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        message: 'Password must be at least 6 characters long.'
+      });
+    }
+
+    // ------------------------------------------------
+    // ANTI-BOT SECURITY
+    // ------------------------------------------------
+
+    const isLocalIP =
+      userIP === '127.0.0.1' ||
+      userIP === '::1';
+
+    if (!isLocalIP) {
+      const rule = await IpRule.findOne({
+        ipAddress: userIP
+      });
+
+      if (rule && rule.isBlocked) {
+        return res.status(403).json({
+          message: "Access Denied."
+        });
+      }
+    }
+
+    if (deviceId) {
+      const isDeviceBlocked = await BlockedDevice.findOne({
+        deviceId
+      });
+
+      if (isDeviceBlocked) {
+        return res.status(403).json({
+          message: "Device blocked."
+        });
+      }
+    }
+
+    // ------------------------------------------------
+    // SPONSOR CHECK
+    // ------------------------------------------------
+
+    const userCount = await User.countDocuments();
+
+    let actualSponsorId = null;
+    let sponsorUser = null;
+
+    if (userCount === 0) {
+      actualSponsorId = sponsorId || 'ROOT';
+    } else {
+      if (!sponsorId) {
+        return res.status(400).json({
+          message: 'Sponsor ID is compulsory.'
+        });
+      }
+
+      actualSponsorId = sponsorId;
+
+      sponsorUser = await User.findOne({
+        userId: actualSponsorId
+      });
+
+      if (!sponsorUser) {
+        return res.status(400).json({
+          message: 'Invalid Sponsor ID.'
+        });
+      }
+    }
+
+    // ------------------------------------------------
+    // CREATE NEW USER
+    // ------------------------------------------------
+
+    const newUserId = await generateUserId();
+    const txPassword = generateTransactionPassword();
+
+    const user = new User({
+      userId: newUserId,
+      name,
+      mobile,
+      email,
+      country,
+      walletAddress,
+      upi,
+      password,
+      transactionPassword: txPassword,
+      sponsorId: actualSponsorId,
+      role: 'user',
+      ipAddress: userIP,
+      deviceId: deviceId || null
+    });
+
+    await user.save();
+
+    // ------------------------------------------------
+    // AUTOMATIC DIRECT COUNT UPDATE
+    // Every successful registration increases
+    // the direct sponsor's directCount by 1.
+    // ------------------------------------------------
+
+    if (sponsorUser && actualSponsorId) {
+      try {
+        const sponsorUpdate = await User.updateOne(
+          {
+            _id: sponsorUser._id,
+            userId: actualSponsorId
+          },
+          {
+            $inc: {
+              directCount: 1
+            }
+          }
+        );
+
+        if (sponsorUpdate.modifiedCount > 0) {
+          console.log(
+            `✅ Direct count increased: Sponsor=${actualSponsorId}, New Member=${user.userId}`
+          );
+        } else {
+          console.error(
+            `❌ Direct count update failed for sponsor: ${actualSponsorId}`
+          );
+        }
+      } catch (countError) {
+        console.error(
+          `❌ Sponsor directCount error: ${actualSponsorId}`,
+          countError
+        );
+      }
+    }
+
+    // ------------------------------------------------
+    // BACKGROUND EMAIL
+    // ------------------------------------------------
+
+    sendEmail({
+      email: user.email,
+      subject: '🎉 Welcome to World together 24!',
+      html: `
+        <div style="font-family: Arial; padding: 20px;">
+          <h2 style="color: #03a9f4;">🚀 Welcome to zoro games</h2>
+
+          <p>Hello <strong>${user.name}</strong>,</p>
+
+          <p>Your account has been successfully created.</p>
+
+          <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #03a9f4;">
+            <p>👤 <strong>User ID:</strong> ${user.userId}</p>
+            <p>🔑 <strong>Login Password:</strong> The password you entered during registration.</p>
+            <p>🛡️ <strong>Transaction Password:</strong> ${txPassword}</p>
+            <p>Please keep your transaction password safe.</p>
+          </div>
+
+          <br/>
+
+          <a
+            href="${process.env.FRONTEND_URL}/login"
+            style="background-color: #03a9f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;"
+          >
+            Login Now
+          </a>
+        </div>
+      `
+    }).catch(emailErr => {
+      console.error("⚠️ Email failed:", emailErr.message);
+    });
+
+    // ------------------------------------------------
+    // SUCCESS RESPONSE
+    // ------------------------------------------------
+
+    return res.status(201).json({
+      message: 'User registered successfully.',
+      userId: user.userId,
+      name: user.name,
+      transactionPassword: txPassword
+    });
+
+  } catch (err) {
+    console.error('Register error:', err);
+
+    return res.status(500).json({
+      message: 'Server error.'
+    });
+  }
+});
+
 
 router.post("/login", async (req, res) => {
   try {

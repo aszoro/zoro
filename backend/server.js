@@ -158,20 +158,15 @@ mongoose.connect(process.env.MONGO_URI, {
   .then(async () => {
     console.log("MongoDB host:", mongoose.connection.host);
     console.log("MongoDB database:", mongoose.connection.name);
-    console.log("✅ MongoDB connected successfully for World Finance");
+    console.log("✅ MongoDB connected successfully for Zoro Games");
 
     const PORT = process.env.PORT || 5000;
 
     console.log("MODEL DB:", User.db.name);
-console.log("MODEL COLLECTION:", User.collection.name);
+ 
+ 
 
-const result = await User.collection.findOne(
-  { userId: 3352868 },
-  { projection: { userId: 1, name: 1 } }
-);
-
-console.log("DIRECT MONGODB RESULT:", result);
-
+ 
     app.listen(PORT, () => {
 
       

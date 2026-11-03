@@ -1051,6 +1051,9 @@ import {
 const WithdrawalModal = ({ onClose }) => {
   const { user, token } = useAuth();
 
+    const isSetupUser =
+    String(user?.role || "").toLowerCase() === "setup";
+
   const [loading, setLoading] = useState(false);
   const [walletData, setWalletData] = useState({
     directIncome: 0,
@@ -1318,6 +1321,12 @@ const WithdrawalModal = ({ onClose }) => {
     }
   };
 
+
+    if (isSetupUser) {
+    return null;
+  }
+
+     
   return (
     <>
     <div className="fixed inset-0 z-[99999] flex items-center justify-center overflow-y-auto bg-[#05040b]/90 p-2 backdrop-blur-md sm:p-5">
@@ -1328,7 +1337,7 @@ const WithdrawalModal = ({ onClose }) => {
         className="relative my-auto flex max-h-[96dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-[22px] border border-white/10 bg-[#0b0914] text-white shadow-[0_25px_100px_rgba(0,0,0,0.65)]"
       >
         {/* Header */}
-        <header className="relative shrink-0 overflow-hidden border-b border-white/[0.07] px-5 pb-5 pt-5 sm:px-7">
+        <header className="relative pt-[60px] shrink-0 overflow-hidden border-b border-white/[0.07] px-5 pb-5 pt-5 sm:px-7">
           <div className="pointer-events-none absolute -right-12 -top-20 h-44 w-44 rounded-full bg-violet-600/15 blur-[65px]" />
 
           <div className="relative flex items-center justify-between">

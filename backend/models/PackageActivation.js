@@ -184,6 +184,13 @@ const packageActivationSchema = new mongoose.Schema(
       min: 0,
     },
 
+    // Is package ke against ab tak kitna Level ROI receive hua
+levelRoiEarned: {
+  type: Number,
+  default: 0,
+  min: 0,
+},
+
     startDate: {
       type: Date,
       default: Date.now,

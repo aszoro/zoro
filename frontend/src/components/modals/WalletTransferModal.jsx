@@ -648,7 +648,7 @@ const WalletTransferModal = ({ onClose }) => {
         <div className="h-[3px] shrink-0 bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" />
 
         {/* Compact header */}
-        <header className="relative flex shrink-0 items-center justify-between border-b border-white/[0.07] px-4 py-3.5">
+        <header className=" pt-[60px] relative flex shrink-0 items-center justify-between border-b border-white/[0.07] px-4 py-3.5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-300">
               <ArrowLeftRight size={20} />
